@@ -84,10 +84,10 @@ bool SqlTable::Delete(int video_id)
     return SQLQuery(_conn, tmp);
 }
 
+/*id name description type video_path cover_path*/
 bool SqlTable::Update(int video_id, const Json::Value& root)
 {
     char tmp[DEFAULT_SIZE] = { '\0' };
-    /*id name description type video_path cover_path*/
     snprintf(tmp, DEFAULT_SIZE, "update tb_video set name = '%s', description = '%s', type = %d where id = %d", 
                                                 root["name"].asCString(), 
                                                 root["description"].asCString(), 

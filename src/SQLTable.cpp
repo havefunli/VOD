@@ -147,12 +147,10 @@ bool SqlTable::SelectOne(int video_id, Json::Value& root)
     return true;
 }
 
-bool SqlTable::SelectLike(const StringPair& pair, Json::Value& root)
+bool SqlTable::SelectLike(const std::string& name, Json::Value& root)
 {
     char tmp[DEFAULT_SIZE];
-    snprintf(tmp, DEFAULT_SIZE, "select * from tb_video where %s = '%s'", 
-                                pair.first.c_str(), 
-                                pair.second.c_str());
+    snprintf(tmp, DEFAULT_SIZE, "select * from tb_video where name = '%s'", name.c_str());
     if (!FetchResults(tmp, root)) { return false; }
     return true;
 }

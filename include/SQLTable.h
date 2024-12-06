@@ -41,7 +41,7 @@ public:
     /*查询数据*/
     bool SelectAll(Json::Value&);
     bool SelectOne(int, Json::Value&);
-    bool SelectLike(const StringPair&, Json::Value&);
+    bool SelectLike(const std::string&, Json::Value&);
 
 
 private:

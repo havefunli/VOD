@@ -62,18 +62,21 @@ public:
     }
 
     /*向文件写入数据*/
-    static void SetContent(const std::string& file_name, const std::string& out)
+    static bool SetContent(const std::string& file_name, const std::string& out)
     {
         std::ofstream ofs(file_name, std::ios_base::binary);
         if (!ofs.is_open()) 
         { 
             spdlog::error("ofstream open failed...");
-            return;
+            return false;
         }
         /*写入数据到文件*/
         ofs.write(out.c_str(), out.size());
 
         ofs.close();
+
+        spdlog::debug("Successful save file = {}", file_name);
+        return true;
     }
 
     /*创建文件目录*/
@@ -85,6 +88,19 @@ public:
             if (mkdir(dir_name.c_str(), 0777) == 0) { return true; }
             else { return false; }
         }
+    }
+
+    /*delete file locally*/
+    static bool DeleteFile(const std::string& file_path)
+    {
+        int n = remove(file_path.c_str());
+        if (n == -1)
+        {
+            perror("remove");
+            return false;
+        }
+        spdlog::debug("Successful delete file = {}", file_path);
+        return true;
     }
 };
 
@@ -106,7 +122,7 @@ public:
     }
 
     /*对string的内容反序列化*/
-    static void Deserialize(const std::string& in, Json::Value& root)
+    static bool Deserialize(const std::string& in, Json::Value& root)
     {
         CRPtr cr(Json::CharReaderBuilder().newCharReader());
         Json::String err;
@@ -114,7 +130,8 @@ public:
         if (!n)
         {
             spdlog::error("CharReader::parse error...");
-            return;
+            return false;
         }
+        return true;
     }
 };

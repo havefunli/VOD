@@ -53,8 +53,7 @@ void test_4()
 void test_5()
 {
     Json::Value root;
-    std::pair<std::string, std::string> pair("name", "海绵宝宝");
-    st.SelectLike(pair, root);
+    st.SelectLike("海绵宝宝", root);
     std::cout << root.toStyledString() << std::endl;
 }
 

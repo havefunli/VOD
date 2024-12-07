@@ -67,11 +67,10 @@ bool SqlTable::Insert(const Json::Value& root)
 {
     char tmp[DEFAULT_SIZE] = { '\0' };
     /*id name description type video_path cover_path*/
-    snprintf(tmp, DEFAULT_SIZE, "insert into tb_video(name, description, type, video_path, cover_path) \
-                                        values('%s', '%s', %d, '%s', '%s');", 
+    snprintf(tmp, DEFAULT_SIZE, "insert into tb_video(name, description, video_path, cover_path) \
+                                        values('%s', '%s', '%s', '%s');", 
                                         root["name"].asCString(), 
                                         root["description"].asCString(),
-                                        root["type"].asInt(),
                                         root["video_path"].asCString(),
                                         root["cover_path"].asCString());
     return SQLQuery(_conn, tmp);
@@ -88,10 +87,9 @@ bool SqlTable::Delete(int video_id)
 bool SqlTable::Update(int video_id, const Json::Value& root)
 {
     char tmp[DEFAULT_SIZE] = { '\0' };
-    snprintf(tmp, DEFAULT_SIZE, "update tb_video set name = '%s', description = '%s', type = %d where id = %d", 
+    snprintf(tmp, DEFAULT_SIZE, "update tb_video set name = '%s', description = '%s' where id = %d", 
                                                 root["name"].asCString(), 
                                                 root["description"].asCString(), 
-                                                root["type"].asInt(),
                                                 video_id);
     return SQLQuery(_conn, tmp);
 }
@@ -122,7 +120,6 @@ bool SqlTable::FetchResults(const std::string& query, Json::Value& root)
         data["id"] = row[0];
         data["name"] = row[1];
         data["description"] = row[2];
-        data["type"] = row[3];
         data["video_path"] = row[4];
         data["cover_path"] = row[5];
         root.append(data);

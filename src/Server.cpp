@@ -14,8 +14,9 @@ SQLPtr Server::_conn = std::shared_ptr<SqlTable>(new SqlTable());
 /*id name description type video cover*/
 void Server::Insert(const httplib::Request &req, httplib::Response &rsp)
 {
+    spdlog::debug("Execute Insert video");
     /*数据格式有误*/
-    if (!req.has_file("name") || !req.has_file("description") || !req.has_file("type") || !req.has_file("video") || !req.has_file("cover"))
+    if (!req.has_file("name") || !req.has_file("description") || !req.has_file("video") || !req.has_file("cover"))
     {
         rsp.status = 400;
         std::string error_page;
@@ -27,7 +28,6 @@ void Server::Insert(const httplib::Request &req, httplib::Response &rsp)
     /*提取数据*/
     httplib::MultipartFormData name = req.get_file_value("name");
     httplib::MultipartFormData desc  = req.get_file_value("description");
-    httplib::MultipartFormData type = req.get_file_value("type");
     httplib::MultipartFormData video = req.get_file_value("video");
     httplib::MultipartFormData cover = req.get_file_value("cover");
 
@@ -70,7 +70,6 @@ void Server::Insert(const httplib::Request &req, httplib::Response &rsp)
     Json::Value root;
     root["name"] = name.content;
     root["description"] = desc.content;
-    root["type"] = std::stoi(type.content); // 这里注意
     root["video_path"] = VIDEODIR + name.content + "_" + video.filename;
     root["cover_path"] = IMAGEDIR + name.content + "_" + cover.filename;
     if (!_conn->Insert(root))
@@ -103,6 +102,7 @@ void Server::Insert(const httplib::Request &req, httplib::Response &rsp)
     }
     rsp.set_content( R"({"result": true, "reason": "successfully inserted data"})", "text/plain");
     spdlog::info("Successful insert video = {}", name.content);
+    
     return;
 }
 
@@ -237,7 +237,7 @@ Server::~Server() = default;
 void Server::RegisterFunc()
 {
     _srv.Put("/video/(\\d+)", Server::Update);
-    _srv.Post("/video/", Server::Insert);
+    _srv.Post("/video", Server::Insert);
     _srv.Get("/video/", Server::SelectAll);
     _srv.Get("/video/(\\d+)", Server::SelectOne);
     _srv.Delete("/video/(\\d+)", Server::Delete);

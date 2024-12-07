@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>VOD</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 表单容器美化样式 */
+        .form-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #ffffff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 10px;
+            z-index: 1000;
+            display: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .form-container.active {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* 表单元素美化样式 */
+        .form-container label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-container input,
+        .form-container textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            color: #333;
+            /* 设置字体颜色为深色 */
+            background-color: #fff;
+            /* 设置背景颜色为白色 */
+        }
+
+        .form-container input::placeholder,
+        .form-container textarea::placeholder {
+            color: #aaa;
+            /* 占位符颜色为浅灰色 */
+        }
+
+        .form-container input:focus,
+        .form-container textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+            outline: none;
+            color: #333;
+            /* 确保焦点状态下文字颜色正常 */
+            background-color: #fff;
+            /* 确保焦点状态下背景颜色为白色 */
+        }
+
+        .form-container h2 {
+            color: #333;
+            /* 设置标题为深色 */
+            font-size: 24px;
+            /* 设置适中的字体大小 */
+            text-align: center;
+            /* 居中显示标题 */
+            margin-bottom: 20px;
+            /* 增加标题下方的间距 */
+        }
+    </style>
+
+<body id="top">
+
+    <!-- 点击按钮 -->
+    <button class="open-btn" onclick="toggleForm()">+</button>
+
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay" onclick="toggleForm()"></div>
+
+    <!-- 表单容器 -->
+    <div class="form-container" id="formContainer">
+        <h2>新增视频</h2>
+        <form id="form" action="/video" method="post" enctype="multipart/form-data">
+            <label for="name">视频名称:</label>
+            <input type="text" name="name" required>
+
+            <label for="description">视频简介:</label>
+            <input type="text" name="description" required>
+
+            <label for="cover">封面:</label>
+            <input type="file" name="cover" accept="image/*" required>
+
+            <label for="video">视频:</label>
+            <input type="file" name="video" accept="video/*" required>
+
+            <button type="submit">添加视频</button>
+        </form>
+    </div>
+
+    <div id="myapp">
+        <section id="banner" data-video="images/banner">
+            <div class="inner">
+                <header>
+                    <h1>畅影坊</h1>
+                    <p>悦享视界，随时精彩</p>
+                </header>
+                <a href="#main" class="more">Learn More</a>
+            </div>
+        </section><!-- Main -->
+        <div id="main">
+            <div class="inner">
+                <div class="thumbnails">
+                    <div class="box" v-for="video in videos">
+                        <a href="https://www.bilibili.com/" class="image fit">
+                            <img v-bind:src="video.cover_path" alt="" width="600" height="338">
+                        </a>
+                        <div class="inner">
+                            <h3>{{ video.name }}</h3>
+                            <p>{{ video.description }}</p>
+                            <a href="https://www.bilibili.com/" class="button fit">Watch</a>
+                        </div>
+                    </div>
+                    <!-- Repeat the same structure for other videos -->
+                </div>
+            </div>
+        </div>
+
+        <footer id="footer">
+            <div class="inner">
+                <h2>Copyright &copy; Author by Bug_Machine</h2>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+    <script>
+        // 显示或隐藏表单
+        function toggleForm() {
+            const formContainer = document.getElementById('formContainer');
+            const overlay = document.getElementById('overlay');
+            formContainer.classList.toggle('active');
+            overlay.style.display = formContainer.classList.contains('active') ? 'block' : 'none';
+        }
+
+        let app = new Vue({
+            el: '#myapp',
+            data: {
+                author: 'Limuyou',
+                message: 'hello',
+                videos: []
+            },
+
+            methods: {
+                get_all_videos: function () {
+                    $.ajax({
+                        url: '/video/',
+                        type: 'GET',
+                        context: this,
+                        success: function (result, status, xhr) {
+                            this.videos = result;
+                        }
+                    })
+                }
+            }
+        });
+
+        app.get_all_videos();
+    </script>
+</body>
+
+</html>

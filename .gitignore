@@ -3,3 +3,6 @@
 /build/
 Makefile
 .gitignore
+/cover/
+/wwwroot/cover
+/wwwroot/video

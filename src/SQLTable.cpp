@@ -120,8 +120,8 @@ bool SqlTable::FetchResults(const std::string& query, Json::Value& root)
         data["id"] = row[0];
         data["name"] = row[1];
         data["description"] = row[2];
-        data["video_path"] = row[4];
-        data["cover_path"] = row[5];
+        data["video_path"] = row[3];
+        data["cover_path"] = row[4]; // BUG
         root.append(data);
     }
     

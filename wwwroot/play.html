@@ -15,22 +15,34 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100%;
         }
 
         .video-player-container {
-            width: 90%;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 1200px;
+            /* 让视频在大屏幕上可以放大 */
             background: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 让内容居中 */
         }
+
+
 
         .video-wrapper {
             position: relative;
-            padding-top: 56.25%;
-            /* 16:9 aspect ratio */
+            width: 1200px;
+            /* 固定宽度 */
+            height: 750px;
+            /* 固定高度 */
+            background-color: rgba(0, 0, 0, 0.1);
         }
+
 
         .video-wrapper iframe {
             position: absolute;
@@ -41,28 +53,37 @@
             border: none;
         }
 
+
         .video-info {
             padding: 20px;
+            background-color: #fff;
+            width: 100%;
+            /* 确保描述部分占满容器宽度 */
+            text-align: center;
+            /* 让标题和描述居中 */
         }
 
         .video-title {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
         }
 
         .video-description {
-            font-size: 14px;
+            font-size: 16px;
             color: #666;
             line-height: 1.6;
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            /* 增加一些内边距，确保描述与视频有一定间距 */
         }
 
+        /* Styling for actions buttons and links */
         .video-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 20px;
         }
 
         .video-actions button {
@@ -94,18 +115,57 @@
 </head>
 
 <body>
-    <div class="video-player-container">
-        <div class="video-wrapper">
-            <iframe src="" allowfullscreen></iframe>
+    <div id="myapp">
+        <div class="video-player-container">
+            <!-- 先显示标题 -->
+            <div class="video-info">
+                <h1 class="video-title">{{ video.name }}</h1>
+            </div>
+
+            <!-- 然后显示视频 -->
+            <div class="video-wrapper">
+                <iframe v-bind:src="video.video_path" allowfullscreen></iframe>
+            </div>
+
+            <!-- 描述放在视频下方 -->
+            <div class="video-info">
+                <p class="video-description">{{ video.description }}</p>
+            </div>
         </div>
-        <div class="video-info">
-            <h1 class="video-title">视频标题：学习 HTML 视频播放</h1>
-            <p class="video-description">
-                本视频通过 iframe 嵌入展示如何在网页中播放视频，这是一个简单的示例，方便您快速集成到您的项目中。
-            </p>
-        </div>
+
     </div>
 </body>
 
-</html>
+<!-- JavaScript -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+<script>
+    let app = new Vue({
+        el: '#myapp',
+        data: {
+            author: "BugMachine",
+            video: {}
+        },
+        methods: {
+            get_param: function (name) {
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ""])[1].replace(/\+/g, '%20')) || null
+            },
 
+            get_video: function () {
+                var id = this.get_param("id");
+                $.ajax({
+                    url: "/video/" + id,
+                    type: "get",
+                    context: this,
+                    success: function (result, status, xhr) {
+                        this.video = result;
+                    }
+                })
+            }
+        }
+    });
+    app.get_video();
+</script>
+
+</html>
